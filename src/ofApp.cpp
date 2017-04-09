@@ -79,7 +79,7 @@ void ofApp::setup(){
         ofxCsvRow currentRow = settings.getRow(i);
         cout << ofToString(currentRow.getData()) << endl;
         
-        if(i < 3){
+        if(i < 4){
             keystoneLayers[0].setPoint(i % 4, currentRow.getInt(0), currentRow.getInt(1));
         } else {
             keystoneLayers[1].setPoint(i % 4, currentRow.getInt(0), currentRow.getInt(1));
@@ -96,10 +96,10 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    if(positionMode){
+    //if(positionMode){
         //ofPoint selectedPoint = keystoneLayers[selectedKeystone].getPoint(currentPoint);
-        keystoneLayers[selectedKeystone].setPoint(currentPoint, ofGetMouseX(), ofGetMouseY());
-    }
+      //  keystoneLayers[selectedKeystone].setPoint(currentPoint, ofGetMouseX(), ofGetMouseY());
+    //}
     
     video.update();
     
@@ -114,6 +114,9 @@ void ofApp::update(){
             ofDrawLine(0,i * (videoTop.getHeight() / 10.0), videoTop.getWidth(), i * (videoTop.getHeight() / 10.0));
 
         }
+        
+        ofFill();
+        ofDrawRectangle(videoTop.getWidth() * 0.5, videoTop.getHeight() * 0.5, 50, 200);
     }
     videoTop.end();
     
@@ -128,6 +131,11 @@ void ofApp::update(){
             ofDrawLine(0,i * (videoTop.getHeight() / 10.0), videoTop.getWidth(), i * (videoTop.getHeight() / 10.0));
             
         }
+        
+        ofFill();
+        ofDrawRectangle(videoTop.getWidth() * 0.5, videoTop.getHeight() * 0.5, 50, 200);
+        ofDrawRectangle(videoTop.getWidth() * 0.5 + 60, videoTop.getHeight() * 0.5, 50, 200);
+
     }
     
     videoBottom.end();
@@ -177,6 +185,26 @@ void ofApp::draw(){
     
 }
 
+void ofApp::saveKeystoneData(){
+    
+    for (int i=0; i<8; i++) {
+        ofxCsvRow currentRow;
+        if (i<4) {
+            currentRow.addInt(keystoneLayers[0].getPoint(i%4).x);
+            currentRow.addInt(keystoneLayers[0].getPoint(i%4).y);
+        } else {
+            currentRow.addInt(keystoneLayers[1].getPoint(i%4).x);
+            currentRow.addInt(keystoneLayers[1].getPoint(i%4).y);
+        }
+        
+        settings.setRow(i, currentRow);
+    }
+    
+    settings.save();
+    
+    
+}
+
 void ofApp::moveLeft(){
     ofPoint c = keystoneLayers[selectedKeystone].getPoint(currentPoint);
     keystoneLayers[selectedKeystone].setPoint(currentPoint, c.x-moveStep, c.y);
@@ -221,8 +249,8 @@ void ofApp::keyPressed(int key){
     
     if(key == 'p'){
         positionMode = !positionMode;
-        selectedKeystone = 0;
-        currentPoint = 0;
+        //selectedKeystone = 0;
+        //currentPoint = 0;
     }
     
     if(key == '1'){
@@ -233,8 +261,7 @@ void ofApp::keyPressed(int key){
     }
     
     if (key == 's') {
-        ofFile settingsFile = ofFile("settings.csv");
-        //settingsFile.cl
+        saveKeystoneData();
     }
     
 }
@@ -269,7 +296,10 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
+    if(positionMode){
+       ofPoint selectedPoint = keystoneLayers[selectedKeystone].getPoint(currentPoint);
+       keystoneLayers[selectedKeystone].setPoint(currentPoint, ofGetMouseX(), ofGetMouseY());
+    }
 }
 
 //--------------------------------------------------------------

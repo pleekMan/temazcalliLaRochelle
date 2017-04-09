@@ -27,6 +27,8 @@ class ofApp : public ofBaseApp{
     void moveRight();
     void moveUp();
     void moveDown();
+    
+    void saveKeystoneData();
 
     
     ofVideoPlayer video;
