@@ -9,43 +9,7 @@ void ofApp::setup(){
     //ofSetWindowShape(1920, 2160);
     //ofSetWindowPosition(x,y);
     
-    /*
-    if( settings.loadFile("settings.xml") ){
-		settingsMessage = "mySettings.xml loaded!";
-	}else{
-		settingsMessage = "unable to load mySettings.xml check data/ folder";
-	}
-    */
-    
-    // LOAD/SAVE KEYSTONE POINTS TO CSV FILE - BEGIN
-    /*
-    ofBuffer settings = ofBufferFromFile("settings.csv");
-    
-    int lineCounter = 0;
-    while (lineCounter < 8) {
-        vector<string> currentLine = ofSplitString(settings.getNextLine(), ",");
-        cout << currentLine[0] << " : " << currentLine[0] << endl;
-        
-        if(lineCounter < 3){
-            keystoneLayers[0].setPoint(lineCounter % 4, ofToInt(currentLine[0]), ofToInt(currentLine[1]));
-        } else {
-            keystoneLayers[1].setPoint(lineCounter % 4, ofToInt(currentLine[0]), ofToInt(currentLine[1]));
-
-        }
-        lineCounter++;
-	}
-     */
-    // LOAD/SAVE KEYSTONE POINTS TO CSV FILE - END
-    
-    
-    //keystoneLayers[0].setGridSize(2, 2);
-    //keystoneLayers[1].setGridSize(2, 2);
-    
-    
-    
-    
-    
-	video.load("Temazcalli_FullDome_Final_1024x.mov");
+ 	video.load("Temazcalli_FullDome_Final_1024x.mov");
 	video.setLoopState(OF_LOOP_NORMAL);
 	video.play();
     
@@ -73,23 +37,7 @@ void ofApp::setup(){
     keystoneLayers[0].setTexture(videoTop.getTexture());
     keystoneLayers[1].setTexture(videoBottom.getTexture());
 
-    // LOAD/SAVE KEYSTONE POINTS TO CSV FILE - BEGIN
-    settings.load("settings.csv", ",");
-    for (int i=0; i<settings.getNumRows(); i++) {
-        ofxCsvRow currentRow = settings.getRow(i);
-        cout << ofToString(currentRow.getData()) << endl;
-        
-        if(i < 4){
-            keystoneLayers[0].setPoint(i % 4, currentRow.getInt(0), currentRow.getInt(1));
-        } else {
-            keystoneLayers[1].setPoint(i % 4, currentRow.getInt(0), currentRow.getInt(1));
-            
-        }
-    }
-    // LOAD/SAVE KEYSTONE POINTS TO CSV FILE - END
-
-    
-    //cout << "--||" << ofToString(ofGetWidth()) << " x " << ofToString(ofGetHeight()) << endl;
+    loadKeystoneData();
     
 }
 
@@ -151,14 +99,6 @@ void ofApp::draw(){
     // VIDEOSIZE IS FULLHD WIDTH.
     // PLACING THE VIDEO VERTICALLY IS = computerDisplayHeight + ((2projectorsHeight - videoSize) * halfOfThat)
     
-    //video.draw(0, 900 + ((2160 - videoSize) * 0.5),videoSize,videoSize);
-    //video.draw(0, positionY, videoSize, videoSize);
-    
-    //ofDrawEllipse(ofGetMouseX(), ofGetMouseY(), 50, 50);
-    
-    //videoTop.draw(0, 0);
-    //videoBottom.draw(500, 500);
-    
     ofSetColor(255);
     
     //ofTranslate(200, 200);
@@ -175,16 +115,39 @@ void ofApp::draw(){
         }
         ofNoFill();
         ofDrawCircle(keystoneLayers[selectedKeystone].getPoint(currentPoint), 10);
+        ofDrawCircle(keystoneLayers[selectedKeystone].getPoint(currentPoint), 5);
+        
+        ofDrawBitmapString(currentPoint, keystoneLayers[selectedKeystone].getPoint(currentPoint) + ofPoint(10,10));
+
         
         ofDrawBitmapString("x:" + ofToString(ofGetMouseX()) + " | y: " + ofToString(ofGetMouseY()), ofGetMouseX(), ofGetMouseY());
         ofDrawBitmapString("FR:" + ofToString(ofGetFrameRate()) + "\nSELECTED KEYSTONE: " + ofToString(selectedKeystone), 20,20);
         
         ofDrawBitmapString("SURFACE 1:\n" + ofToString(keystoneLayers[0].getPoint(0)) + "\n" + ofToString(keystoneLayers[0].getPoint(1)) + "\n" + ofToString(keystoneLayers[0].getPoint(2)) + "\n" + ofToString(keystoneLayers[0].getPoint(3)), 10, 100);
+        
+        ofDrawBitmapString("SURFACE 2:\n" + ofToString(keystoneLayers[1].getPoint(0)) + "\n" + ofToString(keystoneLayers[1].getPoint(1)) + "\n" + ofToString(keystoneLayers[1].getPoint(2)) + "\n" + ofToString(keystoneLayers[1].getPoint(3)), 10, 100);
 
     }
     
 }
 
+void ofApp::loadKeystoneData(){
+    
+    settings.load("settings.csv", ",");
+    for (int i=0; i<settings.getNumRows(); i++) {
+        ofxCsvRow currentRow = settings.getRow(i);
+        cout << ofToString(currentRow.getData()) << endl;
+        
+        if(i < 4){
+            keystoneLayers[0].setPoint(i % 4, currentRow.getInt(0), currentRow.getInt(1));
+        } else {
+            keystoneLayers[1].setPoint(i % 4, currentRow.getInt(0), currentRow.getInt(1));
+            
+        }
+    }
+
+    
+}
 void ofApp::saveKeystoneData(){
     
     for (int i=0; i<8; i++) {
@@ -225,7 +188,7 @@ void ofApp::moveDown(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
-    if(key == 'd'){
+    if(key == 'c'){
         calibrationMode = !calibrationMode;
         selectedKeystone = 0;
     }
@@ -284,7 +247,7 @@ void ofApp::keyReleased(int key){
             break;
         case OF_KEY_DOWN:
             moveDown();
-            cout << ofToString(keystoneLayers[selectedKeystone].getPoint(currentPoint)) << endl;
+            // cout << ofToString(keystoneLayers[selectedKeystone].getPoint(currentPoint)) << endl;
             break;
     }
 }

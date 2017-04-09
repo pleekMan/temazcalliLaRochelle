@@ -28,6 +28,7 @@ class ofApp : public ofBaseApp{
     void moveUp();
     void moveDown();
     
+    void loadKeystoneData();
     void saveKeystoneData();
 
     
