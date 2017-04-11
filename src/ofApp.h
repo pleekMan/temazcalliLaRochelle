@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxKeystoneTexture.h"
+//#include "ofxKeystoneTexture.h"
 #include "ofxCsv.h"
+#include "ofxBezierWarp.h"
 
 class ofApp : public ofBaseApp{
 
@@ -23,34 +24,27 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    void moveLeft();
-    void moveRight();
-    void moveUp();
-    void moveDown();
     
-    void loadKeystoneData();
-    void saveKeystoneData();
+    void loadMappingData();
+    void saveMappingData();
 
     
     ofVideoPlayer video;
     bool playing;
-    float ratio;
     int videoSize;
     
     bool calibrationMode;
     ofxCsv settings;
-    //String settingsMessage;
     
-    int positionY;
+   
     bool positionMode;
     
-    ofFbo videoTop;
-    ofFbo videoBottom;
-    
-    ofxKeystoneTexture keystoneLayers[2];
-    
-    int selectedKeystone;
-    int currentPoint;
+    int selectedSurface;
+    //int currentPoint;
     int moveStep;
+    
+    //----------
+    
+    ofxBezierWarp videoSurface[2];
 		
 };

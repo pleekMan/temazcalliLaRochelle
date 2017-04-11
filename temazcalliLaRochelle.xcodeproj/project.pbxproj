@@ -338,6 +338,70 @@
 				<key>sourceTree</key>
 				<string>SOURCE_ROOT</string>
 			</dict>
+			<key>B2FEEE4945FE8B8C29F8D558</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxBezierWarp.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxBezierWarp/src/ofxBezierWarp.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>2D2E457EE45B779BB1BA5CC9</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>20A5072DCFF624B5AEFFE88A</string>
+					<string>B2FEEE4945FE8B8C29F8D558</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>src</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>6333AC77801C53E62B8A0DC8</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>2D2E457EE45B779BB1BA5CC9</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>ofxBezierWarp</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>F6993054A6B6E98C11EC50DF</key>
+			<dict>
+				<key>fileRef</key>
+				<string>20A5072DCFF624B5AEFFE88A</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>20A5072DCFF624B5AEFFE88A</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>30</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxBezierWarp.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxBezierWarp/src/ofxBezierWarp.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
 			<key>6948EE371B920CB800B5AC1A</key>
 			<dict>
 				<key>children</key>
@@ -353,6 +417,7 @@
 			<dict>
 				<key>children</key>
 				<array>
+					<string>6333AC77801C53E62B8A0DC8</string>
 					<string>5CFAC65997CFC4C36CD009B7</string>
 					<string>6F2ECAA4B10E84D74ADE39BA</string>
 					<string>1F4FB5C423662B96ADFDCC0B</string>
@@ -510,6 +575,7 @@
 					<array>
 						<string>$(OF_CORE_HEADERS)</string>
 						<string>src</string>
+						<string>../../../addons/ofxBezierWarp/src</string>
 						<string>../../../addons/ofxCsv/src</string>
 						<string>../../../addons/ofxKeystoneTexture/src</string>
 						<string>../../../addons/ofxXmlSettings/libs</string>
@@ -572,6 +638,7 @@
 					<array>
 						<string>$(OF_CORE_HEADERS)</string>
 						<string>src</string>
+						<string>../../../addons/ofxBezierWarp/src</string>
 						<string>../../../addons/ofxCsv/src</string>
 						<string>../../../addons/ofxKeystoneTexture/src</string>
 						<string>../../../addons/ofxXmlSettings/libs</string>
@@ -632,6 +699,7 @@
 				<array>
 					<string>E4B69E200A3A1BDC003C02F2</string>
 					<string>E4B69E210A3A1BDC003C02F2</string>
+					<string>F6993054A6B6E98C11EC50DF</string>
 					<string>77699BF6BD81647F909A0009</string>
 					<string>EE4D1E14E6E3D28AB35B1BB3</string>
 					<string>FEFB043558A21972DC7421FA</string>
@@ -723,6 +791,7 @@
 					<array>
 						<string>$(OF_CORE_HEADERS)</string>
 						<string>src</string>
+						<string>../../../addons/ofxBezierWarp/src</string>
 						<string>../../../addons/ofxCsv/src</string>
 						<string>../../../addons/ofxKeystoneTexture/src</string>
 						<string>../../../addons/ofxXmlSettings/libs</string>
@@ -775,6 +844,7 @@
 					<array>
 						<string>$(OF_CORE_HEADERS)</string>
 						<string>src</string>
+						<string>../../../addons/ofxBezierWarp/src</string>
 						<string>../../../addons/ofxCsv/src</string>
 						<string>../../../addons/ofxKeystoneTexture/src</string>
 						<string>../../../addons/ofxXmlSettings/libs</string>

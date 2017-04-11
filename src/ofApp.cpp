@@ -17,6 +17,7 @@ void ofApp::setup(){
     videoSize = 1920;
     //ratio = video.getHeight() / ofGetWindowHeight();
     
+    /*
     videoTop.allocate(videoSize, videoSize / 2);
     videoTop.begin();
     ofClear(0);
@@ -26,52 +27,32 @@ void ofApp::setup(){
     videoBottom.begin();
     ofClear(0);
     videoBottom.end();
+     */
     
-    selectedKeystone = 0;
-    currentPoint = 0;
+    selectedSurface = 0;
     moveStep = 1;
     
     calibrationMode = true;
-    positionY = 0;
     
-    keystoneLayers[0].setTexture(videoTop.getTexture());
-    keystoneLayers[1].setTexture(videoBottom.getTexture());
-
-    loadKeystoneData();
+    
+    //-----------
+    
+    videoSurface[0].allocate(videoSize, videoSize / 2, 3, 2, 100);
+    videoSurface[1].allocate(videoSize, videoSize / 2, 3, 2, 100);
+    
+    
+    cout << ofToString(videoSurface[0].getControlPoints()) << endl;
+    
+    //vector<GLfloat> bezierPoints1;
+    vector<GLfloat> bezierPoints2;
+    
+    loadMappingData();
     
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
-    //if(positionMode){
-        //ofPoint selectedPoint = keystoneLayers[selectedKeystone].getPoint(currentPoint);
-      //  keystoneLayers[selectedKeystone].setPoint(currentPoint, ofGetMouseX(), ofGetMouseY());
-    //}
-    
-    video.update();
-    
-    videoTop.begin();
-    ofClear(0);
-    video.draw(0, 0, videoSize, videoSize);
-    
-    if (calibrationMode) {
-        ofSetColor(255);
-        for (int i=0; i < 10; i++) {
-            ofDrawLine(i * (videoTop.getWidth() / 10.0), 0, i * (videoTop.getWidth() / 10.0), videoTop.getHeight());
-            ofDrawLine(0,i * (videoTop.getHeight() / 10.0), videoTop.getWidth(), i * (videoTop.getHeight() / 10.0));
-
-        }
-        
-        ofFill();
-        ofDrawRectangle(videoTop.getWidth() * 0.5, videoTop.getHeight() * 0.5, 50, 200);
-    }
-    videoTop.end();
-    
-    videoBottom.begin();
-    ofClear(0);
-    video.draw(0, -(videoSize / 2), videoSize, videoSize);
-    
+    /*
     if (calibrationMode) {
         ofSetColor(255);
         for (int i=0; i < 10; i++) {
@@ -82,11 +63,22 @@ void ofApp::update(){
         
         ofFill();
         ofDrawRectangle(videoTop.getWidth() * 0.5, videoTop.getHeight() * 0.5, 50, 200);
-        ofDrawRectangle(videoTop.getWidth() * 0.5 + 60, videoTop.getHeight() * 0.5, 50, 200);
-
     }
+    */
     
-    videoBottom.end();
+    video.update();
+
+    videoSurface[0].begin();
+        video.draw(0, 0, videoSize, videoSize);
+    videoSurface[0].end();
+    //videoSurface[0].setShowWarpGrid(true);
+
+    
+    videoSurface[1].begin();
+        video.draw(0, -(videoSize / 2), videoSize, videoSize);
+    videoSurface[1].end();
+
+    
     
     
 }
@@ -99,15 +91,12 @@ void ofApp::draw(){
     // VIDEOSIZE IS FULLHD WIDTH.
     // PLACING THE VIDEO VERTICALLY IS = computerDisplayHeight + ((2projectorsHeight - videoSize) * halfOfThat)
     
-    ofSetColor(255);
     
-    //ofTranslate(200, 200);
-    //ofScale(0.5, 0.5);
-    keystoneLayers[0].draw();
-    
-    //ofTranslate(200, 200);
-    keystoneLayers[1].draw();
-    
+    for (int i=0; i<2; i++) {
+        videoSurface[i].draw();
+    }
+ 
+    /*
     if (calibrationMode) {
         
         if(positionMode){
@@ -128,78 +117,98 @@ void ofApp::draw(){
         ofDrawBitmapString("SURFACE 2:\n" + ofToString(keystoneLayers[1].getPoint(0)) + "\n" + ofToString(keystoneLayers[1].getPoint(1)) + "\n" + ofToString(keystoneLayers[1].getPoint(2)) + "\n" + ofToString(keystoneLayers[1].getPoint(3)), 10, 100);
 
     }
+     */
+
     
 }
 
-void ofApp::loadKeystoneData(){
+void ofApp::loadMappingData(){
     
     settings.load("settings.csv", ",");
+    vector<GLfloat> bezierPoints;
+
     for (int i=0; i<settings.getNumRows(); i++) {
         ofxCsvRow currentRow = settings.getRow(i);
+        
         cout << ofToString(currentRow.getData()) << endl;
         
-        if(i < 4){
-            keystoneLayers[0].setPoint(i % 4, currentRow.getInt(0), currentRow.getInt(1));
-        } else {
-            keystoneLayers[1].setPoint(i % 4, currentRow.getInt(0), currentRow.getInt(1));
-            
-        }
+        bezierPoints.push_back(currentRow.getFloat(0));
+        bezierPoints.push_back(currentRow.getFloat(1));
+        bezierPoints.push_back(currentRow.getFloat(2));
     }
-
+    
+    std::size_t const half_size = bezierPoints.size() / 2;
+    std::vector<GLfloat> split_lo(bezierPoints.begin(), bezierPoints.begin() + half_size);
+    std::vector<GLfloat> split_hi(bezierPoints.begin() + half_size, bezierPoints.end());
+    
+    videoSurface[0].setControlPoints(split_lo);
+    videoSurface[1].setControlPoints(split_hi);
     
 }
-void ofApp::saveKeystoneData(){
+void ofApp::saveMappingData(){
     
+    /*
+    vector<float> bezierPoints;
+    
+    bezierPoints.insert( bezierPoints.end(), videoSurface[0].getControlPoints().begin(), videoSurface[0].getControlPoints().end() );
+    bezierPoints.insert( bezierPoints.end(), videoSurface[1].getControlPoints().begin(), videoSurface[1].getControlPoints().end() );
+    
+    cout << "--- SAVE DATA STRUCTURE\n" << ofToString(bezierPoints) << endl;
+    */
+    
+    for(int i=0; i < videoSurface[0].getControlPoints().size(); i+=3){
+        
+        ofxCsvRow currentRow;
+        currentRow.addInt(videoSurface[0].getControlPoints()[i+0]);
+        currentRow.addInt(videoSurface[0].getControlPoints()[i+1]);
+        currentRow.addInt(videoSurface[0].getControlPoints()[i+2]);
+        settings.setRow(i / 3, currentRow);
+    }
+    
+    for(int i=0; i < videoSurface[1].getControlPoints().size(); i+=3){
+        
+        ofxCsvRow currentRow;
+        currentRow.addInt(videoSurface[1].getControlPoints()[i+0]);
+        currentRow.addInt(videoSurface[1].getControlPoints()[i+1]);
+        currentRow.addInt(videoSurface[1].getControlPoints()[i+2]);
+        settings.setRow((i / 3) + 6, currentRow);
+    }
+    
+    settings.save();
+
+    
+    /*
     for (int i=0; i<8; i++) {
         ofxCsvRow currentRow;
-        if (i<4) {
+        
             currentRow.addInt(keystoneLayers[0].getPoint(i%4).x);
             currentRow.addInt(keystoneLayers[0].getPoint(i%4).y);
-        } else {
-            currentRow.addInt(keystoneLayers[1].getPoint(i%4).x);
-            currentRow.addInt(keystoneLayers[1].getPoint(i%4).y);
-        }
+
         
         settings.setRow(i, currentRow);
     }
     
-    settings.save();
+    */
     
     
 }
 
-void ofApp::moveLeft(){
-    ofPoint c = keystoneLayers[selectedKeystone].getPoint(currentPoint);
-    keystoneLayers[selectedKeystone].setPoint(currentPoint, c.x-moveStep, c.y);
-}
-void ofApp::moveRight(){
-    ofPoint c = keystoneLayers[selectedKeystone].getPoint(currentPoint);
-    keystoneLayers[selectedKeystone].setPoint(currentPoint, c.x+moveStep, c.y);
-}
-void ofApp::moveUp(){
-    ofPoint c = keystoneLayers[selectedKeystone].getPoint(currentPoint);
-    keystoneLayers[selectedKeystone].setPoint(currentPoint, c.x, c.y-moveStep);
-}
-void ofApp::moveDown(){
-    ofPoint c = keystoneLayers[selectedKeystone].getPoint(currentPoint);
-    keystoneLayers[selectedKeystone].setPoint(currentPoint, c.x, c.y+moveStep);
-}
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
     if(key == 'c'){
         calibrationMode = !calibrationMode;
-        selectedKeystone = 0;
+        selectedSurface = 0;
     }
     
     if(key == ' '){
         if (video.isPaused()) {
-            video.setPaused(false);
+            //video.setPaused(false);
             video.play();
         } else{
             video.setPaused(true);
-            video.play();
+            //video.play();
         }
     }
     
@@ -217,39 +226,49 @@ void ofApp::keyPressed(int key){
     }
     
     if(key == '1'){
-        selectedKeystone = 0;
+        selectedSurface = 0;
     }
     if(key == '2'){
-        selectedKeystone = 1;
+        selectedSurface = 1;
     }
     
     if (key == 's') {
-        saveKeystoneData();
+        saveMappingData();
+    }
+    
+    switch (key) {
+        case 'w':
+            //bUseWarp = !bUseWarp;
+            break;
+        case 'r':
+            //warp.resetWarpGrid();
+            break;
+        case 'k':
+            videoSurface[0].toggleShowWarpGrid();
+            break;
+        case 'l':
+            videoSurface[1].toggleShowWarpGrid();
+            //warp.setWarpGridPosition(100, 100, (ofGetWidth() - 200), (ofGetHeight() - 200));
+            break;
+        case OF_KEY_UP:
+            //warp.setWarpGrid(warp.getNumXPoints(), warp.getNumYPoints() + 1);
+            break;
+        case OF_KEY_RIGHT:
+            //warp.setWarpGrid(warp.getNumXPoints() + 1, warp.getNumYPoints());
+            break;
+        case OF_KEY_DOWN:
+            //warp.setWarpGrid(warp.getNumXPoints(), warp.getNumYPoints() - 1);
+            break;
+        case OF_KEY_LEFT:
+            //warp.setWarpGrid(warp.getNumXPoints() - 1, warp.getNumYPoints());
+            break;
     }
     
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
-    switch(key){
-        case OF_KEY_RETURN:
-            currentPoint = (currentPoint+1) % 4;
-            break;
-        case OF_KEY_LEFT:
-            moveLeft();
-            break;
-        case OF_KEY_RIGHT:
-            moveRight();
-            break;
-        case OF_KEY_UP:
-            moveUp();
-            break;
-        case OF_KEY_DOWN:
-            moveDown();
-            // cout << ofToString(keystoneLayers[selectedKeystone].getPoint(currentPoint)) << endl;
-            break;
-    }
+    
 }
 
 //--------------------------------------------------------------
@@ -259,10 +278,12 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
+    /*
     if(positionMode){
        ofPoint selectedPoint = keystoneLayers[selectedKeystone].getPoint(currentPoint);
        keystoneLayers[selectedKeystone].setPoint(currentPoint, ofGetMouseX(), ofGetMouseY());
     }
+     */
 }
 
 //--------------------------------------------------------------

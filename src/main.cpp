@@ -9,9 +9,9 @@ int main( ){
     //displaySettings.windowMode = OF_FULLSCREEN;
     //displaySettings.multiMonitorFullScreen = true;
     //ofCreateWindow(displaySettings);
-    //ofSetupOpenGL(&displaySettings, 1920, 2160, OF_FULLSCREEN);
+    ofSetupOpenGL(&displaySettings, 1920, 2160, OF_FULLSCREEN);
     
-	ofSetupOpenGL(1024,768,OF_WINDOW);			// <-------- setup the GL context
+	//ofSetupOpenGL(1024,768,OF_WINDOW);			// <-------- setup the GL context
 	//ofSetupOpenGL(1920,2160,OF_FULLSCREEN);			// <-------- setup the GL context
 
     

@@ -1,3 +1,4 @@
+ofxBezierWarp
 ofxCsv
 ofxKeystoneTexture
 ofxXmlSettings
