@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ofMain.h"
-//#include "ofxKeystoneTexture.h"
 #include "ofxCsv.h"
 #include "ofxBezierWarp.h"
+#include "ofxXmlSettings.h"
 
 class ofApp : public ofBaseApp{
 
@@ -32,6 +32,7 @@ class ofApp : public ofBaseApp{
     ofVideoPlayer video;
     bool playing;
     int videoSize;
+    bool stopWhenFinished;
     
     bool calibrationMode;
     ofxCsv settings;
@@ -46,5 +47,9 @@ class ofApp : public ofBaseApp{
     //----------
     
     ofxBezierWarp videoSurface[2];
-		
+    
+    //----------
+    
+    ofxXmlSettings settings2;
+    bool loadSettings();
 };

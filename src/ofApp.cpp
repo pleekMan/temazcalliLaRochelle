@@ -1,5 +1,13 @@
 #include "ofApp.h"
 
+/*
+---------
+---------
+ 
+NOT USING selectedSurface stuff now, but will later
+
+*/
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     
@@ -15,22 +23,11 @@ void ofApp::setup(){
     
     playing = true;
     videoSize = 1920;
-    //ratio = video.getHeight() / ofGetWindowHeight();
-    
-    /*
-    videoTop.allocate(videoSize, videoSize / 2);
-    videoTop.begin();
-    ofClear(0);
-    videoTop.end();
-    
-    videoBottom.allocate(videoSize, videoSize / 2);
-    videoBottom.begin();
-    ofClear(0);
-    videoBottom.end();
-     */
+
     
     selectedSurface = 0;
     moveStep = 1;
+    stopWhenFinished = true;
     
     calibrationMode = true;
     
@@ -46,7 +43,8 @@ void ofApp::setup(){
     //vector<GLfloat> bezierPoints1;
     vector<GLfloat> bezierPoints2;
     
-    loadMappingData();
+    //loadMappingData();
+    loadSettings();
     
 }
 
@@ -71,13 +69,18 @@ void ofApp::update(){
     videoSurface[0].begin();
         video.draw(0, 0, videoSize, videoSize);
     videoSurface[0].end();
-    //videoSurface[0].setShowWarpGrid(true);
 
     
     videoSurface[1].begin();
         video.draw(0, -(videoSize / 2), videoSize, videoSize);
     videoSurface[1].end();
-
+    
+    if (stopWhenFinished) {
+        if (video.getIsMovieDone()) {
+            video.setFrame(0);
+            video.setPaused(true);
+        }
+    }
     
     
     
@@ -87,7 +90,7 @@ void ofApp::update(){
 void ofApp::draw(){
     
     // IMPORTANT!!
-    // USING 2 FULLHD PROJECTORS + COMPUTER DISPLAY (900px HEIGHT)
+    // USING 2 FULLHD PROJECTORS + COMPUTER DISPLAY (900px HEIGHT APROX)
     // VIDEOSIZE IS FULLHD WIDTH.
     // PLACING THE VIDEO VERTICALLY IS = computerDisplayHeight + ((2projectorsHeight - videoSize) * halfOfThat)
     
@@ -95,38 +98,69 @@ void ofApp::draw(){
     for (int i=0; i<2; i++) {
         videoSurface[i].draw();
     }
- 
-    /*
-    if (calibrationMode) {
-        
-        if(positionMode){
-            ofDrawBitmapString("POSITION MODE", 200, 20);
-        }
-        ofNoFill();
-        ofDrawCircle(keystoneLayers[selectedKeystone].getPoint(currentPoint), 10);
-        ofDrawCircle(keystoneLayers[selectedKeystone].getPoint(currentPoint), 5);
-        
-        ofDrawBitmapString(currentPoint, keystoneLayers[selectedKeystone].getPoint(currentPoint) + ofPoint(10,10));
-
-        
-        ofDrawBitmapString("x:" + ofToString(ofGetMouseX()) + " | y: " + ofToString(ofGetMouseY()), ofGetMouseX(), ofGetMouseY());
-        ofDrawBitmapString("FR:" + ofToString(ofGetFrameRate()) + "\nSELECTED KEYSTONE: " + ofToString(selectedKeystone), 20,20);
-        
-        ofDrawBitmapString("SURFACE 1:\n" + ofToString(keystoneLayers[0].getPoint(0)) + "\n" + ofToString(keystoneLayers[0].getPoint(1)) + "\n" + ofToString(keystoneLayers[0].getPoint(2)) + "\n" + ofToString(keystoneLayers[0].getPoint(3)), 10, 100);
-        
-        ofDrawBitmapString("SURFACE 2:\n" + ofToString(keystoneLayers[1].getPoint(0)) + "\n" + ofToString(keystoneLayers[1].getPoint(1)) + "\n" + ofToString(keystoneLayers[1].getPoint(2)) + "\n" + ofToString(keystoneLayers[1].getPoint(3)), 10, 100);
-
-    }
-     */
-
     
+    ofPushStyle();
+    
+    
+    
+    ofPopStyle();
+    
+}
+
+bool ofApp::loadSettings(){
+    
+    if( settings2.loadFile("settingsAttributes_bkup.xml") ){
+		
+        // LOAD SURFACES - BEGIN
+        
+        if (settings2.tagExists("settings:surfaces")){
+            
+            settings2.pushTag("settings"); // SI HAGO ASI "settings:surfaces", NO FUNCIONA
+            settings2.pushTag("surfaces");
+
+            int surfacesCount = settings2.getNumTags("surface");
+            if(surfacesCount > 0){
+                for (int i=0; i<surfacesCount; i++) {
+                    
+                    string surfaceName = settings2.getAttribute("surface", "name","SurfaceX", i);
+                    cout << "|| " << surfaceName << endl;
+                    
+                    settings2.pushTag("surface",i);
+                    int pointsCount = settings2.getNumTags("controlPoint");
+                    
+                    for (int j=0; j<pointsCount; j++) {
+                        int x = ofToInt(settings2.getAttribute("controlPoint", "x", "99", j));
+                        int y = ofToInt(settings2.getAttribute("controlPoint", "y", "99", j));
+                        
+                        cout << "|| " << x << endl;
+                    }
+                    
+                    //cout << "|| " << settings2.getValue("a:valor", 99, i) << endl;
+                    settings2.popTag();
+                }
+            }
+            settings2.popTag();
+            settings2.popTag(); // BACK TO: BEFORE settings (ROOT)
+
+            
+        }
+        
+        
+        // LOAD SURFACES - END
+        
+        
+        
+        return true;
+	}else{
+        return false;
+    }
 }
 
 void ofApp::loadMappingData(){
     
     settings.load("settings.csv", ",");
     vector<GLfloat> bezierPoints;
-
+    
     for (int i=0; i<settings.getNumRows(); i++) {
         ofxCsvRow currentRow = settings.getRow(i);
         
@@ -138,23 +172,14 @@ void ofApp::loadMappingData(){
     }
     
     std::size_t const half_size = bezierPoints.size() / 2;
-    std::vector<GLfloat> split_lo(bezierPoints.begin(), bezierPoints.begin() + half_size);
+    std::vector<GLfloat> split_low(bezierPoints.begin(), bezierPoints.begin() + half_size);
     std::vector<GLfloat> split_hi(bezierPoints.begin() + half_size, bezierPoints.end());
     
-    videoSurface[0].setControlPoints(split_lo);
+    videoSurface[0].setControlPoints(split_low);
     videoSurface[1].setControlPoints(split_hi);
     
 }
 void ofApp::saveMappingData(){
-    
-    /*
-    vector<float> bezierPoints;
-    
-    bezierPoints.insert( bezierPoints.end(), videoSurface[0].getControlPoints().begin(), videoSurface[0].getControlPoints().end() );
-    bezierPoints.insert( bezierPoints.end(), videoSurface[1].getControlPoints().begin(), videoSurface[1].getControlPoints().end() );
-    
-    cout << "--- SAVE DATA STRUCTURE\n" << ofToString(bezierPoints) << endl;
-    */
     
     for(int i=0; i < videoSurface[0].getControlPoints().size(); i+=3){
         
@@ -177,19 +202,6 @@ void ofApp::saveMappingData(){
     settings.save();
 
     
-    /*
-    for (int i=0; i<8; i++) {
-        ofxCsvRow currentRow;
-        
-            currentRow.addInt(keystoneLayers[0].getPoint(i%4).x);
-            currentRow.addInt(keystoneLayers[0].getPoint(i%4).y);
-
-        
-        settings.setRow(i, currentRow);
-    }
-    
-    */
-    
     
 }
 
@@ -197,32 +209,24 @@ void ofApp::saveMappingData(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
-    if(key == 'c'){
+    if(key == 'c' || key == 'C'){
         calibrationMode = !calibrationMode;
         selectedSurface = 0;
     }
     
     if(key == ' '){
         if (video.isPaused()) {
-            //video.setPaused(false);
             video.play();
         } else{
             video.setPaused(true);
-            //video.play();
         }
     }
     
     if(key == 'q'){
-        //video.setFrame(video.getCurrentFrame() - 500);
+        video.setFrame(video.getCurrentFrame() - 500);
     }
     if(key == 'w'){
         video.setFrame(video.getCurrentFrame() + 500);
-    }
-    
-    if(key == 'p'){
-        positionMode = !positionMode;
-        //selectedKeystone = 0;
-        //currentPoint = 0;
     }
     
     if(key == '1'){
@@ -278,12 +282,6 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    /*
-    if(positionMode){
-       ofPoint selectedPoint = keystoneLayers[selectedKeystone].getPoint(currentPoint);
-       keystoneLayers[selectedKeystone].setPoint(currentPoint, ofGetMouseX(), ofGetMouseY());
-    }
-     */
 }
 
 //--------------------------------------------------------------
