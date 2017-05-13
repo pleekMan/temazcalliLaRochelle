@@ -4,6 +4,7 @@
 #include "ofxCsv.h"
 #include "ofxBezierWarp.h"
 #include "ofxXmlSettings.h"
+#include "Surface.h"
 
 class ofApp : public ofBaseApp{
 
@@ -52,4 +53,10 @@ class ofApp : public ofBaseApp{
     
     ofxXmlSettings settings2;
     bool loadSettings();
+    
+    // ------- LO NUEVO CON SURFACES
+    // ACORDARSE DE CREAR UN SurfaceManager PARA GESTIONARLOS Y RENDERIZAR LOS OVERLAYED CONTROLS
+    
+    Surface surface1;
+    
 };
