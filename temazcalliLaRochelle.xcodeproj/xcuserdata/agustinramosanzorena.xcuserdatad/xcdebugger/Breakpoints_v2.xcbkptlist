@@ -6,16 +6,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/ofApp.cpp"
-            timestampString = "516326911.96598"
+            filePath = "src/SurfaceManager.cpp"
+            timestampString = "516418306.429144"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "142"
-            endingLineNumber = "142"
-            landmarkName = "ofApp::loadSettings()"
+            startingLineNumber = "83"
+            endingLineNumber = "83"
+            landmarkName = "SurfaceManager::loadSettings(ofxXmlSettings settings)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

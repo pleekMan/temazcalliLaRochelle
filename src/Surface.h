@@ -19,16 +19,20 @@ class Surface {
     
     
 public:
-    void init(int _id, int width, int height, int resX, int resY);
+    void init(int width, int height, int resX, int resY);
     void update();
     void render();
     
     void setControlPoints(vector<GLfloat> controlPoints);
+    void setName(string _name);
+    void setId(int _id);
+    
     void beginDraw();
     void endDraw();
     
     ofxBezierWarp warpSurface;
     int ID;
+    string name;
     
 private:
 };

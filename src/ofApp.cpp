@@ -44,10 +44,12 @@ void ofApp::setup(){
     vector<GLfloat> bezierPoints2;
     
     //loadMappingData();
-    loadSettings();
+    //loadSettings();
     
     //----- LO NUEVO CON SURFACES
     
+    surfaceManager.init();
+    surfaceManager.loadSettings(settings2);
     
     
 }
@@ -103,62 +105,12 @@ void ofApp::draw(){
         videoSurface[i].draw();
     }
     
-    ofPushStyle();
-    
-    
-    
-    ofPopStyle();
+    //ofPushStyle();
+    //ofPopStyle();
     
 }
 
-bool ofApp::loadSettings(){
-    
-    if( settings2.loadFile("settingsAttributes_bkup.xml") ){
-		
-        // LOAD SURFACES - BEGIN
-        
-        if (settings2.tagExists("settings:surfaces")){
-            
-            settings2.pushTag("settings"); // SI HAGO ASI "settings:surfaces", NO FUNCIONA
-            settings2.pushTag("surfaces");
 
-            int surfacesCount = settings2.getNumTags("surface");
-            if(surfacesCount > 0){
-                for (int i=0; i<surfacesCount; i++) {
-                    
-                    string surfaceName = settings2.getAttribute("surface", "name","SurfaceX", i);
-                    cout << "|| " << surfaceName << endl;
-                    
-                    settings2.pushTag("surface",i);
-                    int pointsCount = settings2.getNumTags("controlPoint");
-                    
-                    for (int j=0; j<pointsCount; j++) {
-                        int x = ofToInt(settings2.getAttribute("controlPoint", "x", "99", j));
-                        int y = ofToInt(settings2.getAttribute("controlPoint", "y", "99", j));
-                        
-                        cout << "|| " << x << endl;
-                    }
-                    
-                    //cout << "|| " << settings2.getValue("a:valor", 99, i) << endl;
-                    settings2.popTag();
-                }
-            }
-            settings2.popTag();
-            settings2.popTag(); // BACK TO: BEFORE settings (ROOT)
-
-            
-        }
-        
-        
-        // LOAD SURFACES - END
-        
-        
-        
-        return true;
-	}else{
-        return false;
-    }
-}
 
 void ofApp::loadMappingData(){
     

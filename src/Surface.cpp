@@ -8,11 +8,8 @@
 
 #include "Surface.h"
 
-void Surface::init(int _id, int width, int height, int resX, int resY){
-    
-    ID = _id;
-    warpSurface.allocate(324,234,3,2,100); // (w,h,resX,resY,pixelsPerGridDivision)
-    
+void Surface::init(int width, int height, int resX, int resY){
+    warpSurface.allocate(width,height,resX,resY,100); // (w,h,resX,resY,pixelsPerGridDivision)
 }
 
 void Surface::update(){
@@ -25,6 +22,13 @@ void Surface::render(){
 
 void Surface::setControlPoints(vector<GLfloat> controlPoints){
     
+}
+
+void Surface::setName(string _name){
+    name = _name;
+}
+void Surface::setId(int _id){
+    ID = _id;
 }
 
 void Surface::beginDraw(){
