@@ -33,6 +33,7 @@ public:
     ofxBezierWarp warpSurface;
     int ID;
     string name;
+    int gridResX, gridResY;
     
 private:
 };

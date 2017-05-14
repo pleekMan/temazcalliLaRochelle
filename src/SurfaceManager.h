@@ -23,12 +23,19 @@ public:
     ~SurfaceManager();
     
     void init();
-    bool loadSettings(ofxXmlSettings settings);
+    bool loadSettings(ofxXmlSettings* settings);
+    void saveSettings(ofxXmlSettings* settings);
     void update();
-    void draw();
+    void render();
     
     void createSurface(string name, int width, int height, int resX, int resY, vector<GLfloat> controlPoints);
-    Surface getSurface(int ID);
+    Surface getSurfaceById(int ID);
+    Surface getSurfaceByName(string _name);
+    int getSurfaceCount();
+    
+    void drawBeginOnSurface(int ID);
+    void drawEndOnSurface(int ID);
+    void toggleSurfaceGrid(int ID);
     
     
 private:

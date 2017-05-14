@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxCsv.h"
 #include "ofxBezierWarp.h"
 #include "ofxXmlSettings.h"
 //#include "Surface.h"
@@ -31,14 +30,12 @@ class ofApp : public ofBaseApp{
     void saveMappingData();
 
     
-    ofVideoPlayer video;
+    //ofVideoPlayer video;
     bool playing;
     int videoSize;
     bool stopWhenFinished;
     
-    bool calibrationMode;
-    ofxCsv settings;
-    
+    bool calibrationMode;    
    
     bool positionMode;
     
@@ -52,7 +49,7 @@ class ofApp : public ofBaseApp{
     
     //----------
     
-    ofxXmlSettings settings2;
+    ofxXmlSettings settings;
     //bool loadSettings();
     
     // ------- LO NUEVO CON SURFACES

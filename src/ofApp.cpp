@@ -17,9 +17,9 @@ void ofApp::setup(){
     //ofSetWindowShape(1920, 2160);
     //ofSetWindowPosition(x,y);
     
- 	video.load("Temazcalli_FullDome_Final_1024x.mov");
-	video.setLoopState(OF_LOOP_NORMAL);
-	video.play();
+ 	//video.load("Temazcalli_FullDome_Final_1024x.mov");
+	//video.setLoopState(OF_LOOP_NORMAL);
+	//video.play();
     
     playing = true;
     videoSize = 1920;
@@ -47,9 +47,9 @@ void ofApp::setup(){
     //loadSettings();
     
     //----- LO NUEVO CON SURFACES
-    
+    settings.load("settings.xml");
     surfaceManager.init();
-    surfaceManager.loadSettings(settings2);
+    surfaceManager.loadSettings(&settings);
     
     
 }
@@ -70,6 +70,24 @@ void ofApp::update(){
     }
     */
     
+    // NEW SURFACE SHIT
+    surfaceManager.update();
+    
+    surfaceManager.drawBeginOnSurface(0);
+    ofSetColor(0,255,0);
+    ofDrawEllipse(ofGetMouseX(), ofGetMouseY(), 20, 20);
+    surfaceManager.drawEndOnSurface(0);
+    
+    surfaceManager.drawBeginOnSurface(1);
+    ofSetColor(0,0,255);
+    ofDrawEllipse(ofGetMouseX(), ofGetMouseY(), 20, 20);
+    surfaceManager.drawEndOnSurface(1);
+    
+    
+    
+    // NEW SURFACE SHIT - END
+    
+    /*
     video.update();
 
     videoSurface[0].begin();
@@ -87,31 +105,37 @@ void ofApp::update(){
             video.setPaused(true);
         }
     }
-    
+    */
     
     
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
     // IMPORTANT!!
     // USING 2 FULLHD PROJECTORS + COMPUTER DISPLAY (900px HEIGHT APROX)
     // VIDEOSIZE IS FULLHD WIDTH.
     // PLACING THE VIDEO VERTICALLY IS = computerDisplayHeight + ((2projectorsHeight - videoSize) * halfOfThat)
     
-    
+    /*
     for (int i=0; i<2; i++) {
         videoSurface[i].draw();
+    }
+     */
+    
+    for (int i=0; i<surfaceManager.getSurfaceCount(); i++) {
+        surfaceManager.render();
     }
     
     //ofPushStyle();
     //ofPopStyle();
     
+    ofDrawBitmapString(ofToString(ofGetFrameRate()), ofPoint(20,20));
+    ofDrawBitmapString(ofToString(ofGetMouseX()) + " : " + ofToString(ofGetMouseY()), ofGetMouseX(), ofGetMouseY());
 }
 
 
-
+/*
 void ofApp::loadMappingData(){
     
     settings.load("settings.csv", ",");
@@ -160,6 +184,7 @@ void ofApp::saveMappingData(){
     
     
 }
+ */
 
 
 //--------------------------------------------------------------
@@ -171,18 +196,20 @@ void ofApp::keyPressed(int key){
     }
     
     if(key == ' '){
+        /*
         if (video.isPaused()) {
             video.play();
         } else{
             video.setPaused(true);
         }
+         */
     }
     
     if(key == 'q'){
-        video.setFrame(video.getCurrentFrame() - 500);
+        //video.setFrame(video.getCurrentFrame() - 500);
     }
     if(key == 'w'){
-        video.setFrame(video.getCurrentFrame() + 500);
+        //video.setFrame(video.getCurrentFrame() + 500);
     }
     
     if(key == '1'){
@@ -193,7 +220,7 @@ void ofApp::keyPressed(int key){
     }
     
     if (key == 's') {
-        saveMappingData();
+        surfaceManager.saveSettings(&settings);
     }
     
     switch (key) {
@@ -204,10 +231,10 @@ void ofApp::keyPressed(int key){
             //warp.resetWarpGrid();
             break;
         case 'k':
-            videoSurface[0].toggleShowWarpGrid();
+            surfaceManager.toggleSurfaceGrid(0); // ESTO FREAKEA MAALL..!!
             break;
         case 'l':
-            videoSurface[1].toggleShowWarpGrid();
+            //videoSurface[1].toggleShowWarpGrid();
             //warp.setWarpGridPosition(100, 100, (ofGetWidth() - 200), (ofGetHeight() - 200));
             break;
         case OF_KEY_UP:
