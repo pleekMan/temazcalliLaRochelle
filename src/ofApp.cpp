@@ -190,6 +190,8 @@ void ofApp::saveMappingData(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
+    surfaceManager.keyPressed(key);
+    
     if(key == 'c' || key == 'C'){
         calibrationMode = !calibrationMode;
         selectedSurface = 0;
@@ -274,7 +276,7 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
+    surfaceManager.mouseReleased(x,y,button);
 }
 
 //--------------------------------------------------------------

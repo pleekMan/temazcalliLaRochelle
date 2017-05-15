@@ -28,15 +28,23 @@ public:
     void update();
     void render();
     
-    void createSurface(string name, int width, int height, int resX, int resY, vector<GLfloat> controlPoints);
-    Surface getSurfaceById(int ID);
+    void createSurface(string name, int id, int width, int height, int resX, int resY, vector<GLfloat> controlPoints);
+    Surface* getSurfaceById(int ID);
     Surface getSurfaceByName(string _name);
     int getSurfaceCount();
+    void selectSurface(int x, int y);
+    void activateSurface(int selectedSurface);
     
     void drawBeginOnSurface(int ID);
     void drawEndOnSurface(int ID);
     void toggleSurfaceGrid(int ID);
+    void previewSelection();
     
+    void keyPressed(int key);
+    void mouseReleased(int x, int y, int button);
+    
+    
+    int selectedSurface;
     
 private:
     

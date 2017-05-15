@@ -59,3 +59,25 @@ void Surface::endDraw(){
     warpSurface.end();
 }
 
+vector<ofPoint> Surface::getCorners(){
+
+    vector<ofPoint> cornerPoints;
+    
+    ofPoint topLeft = ofPoint(float(warpSurface.getControlPoints()[0]),float(warpSurface.getControlPoints()[1]));
+    
+    ofPoint topRight = ofPoint(float(warpSurface.getControlPoints()[((gridResX-1)*3)+0]),float(warpSurface.getControlPoints()[((gridResX-1)*3)+1]));
+    
+    int blX = (warpSurface.getControlPoints().size() - (gridResX*3))+0;
+    int blY = (warpSurface.getControlPoints().size() - (gridResX*3))+1;
+    ofPoint bottomLeft = ofPoint(float(warpSurface.getControlPoints()[blX]),float(warpSurface.getControlPoints()[blY]));
+    
+    ofPoint bottomRight = ofPoint(float(warpSurface.getControlPoints()[warpSurface.getControlPoints().size() - 3]), float(warpSurface.getControlPoints()[warpSurface.getControlPoints().size() - 2]));
+    
+    cornerPoints.push_back(topLeft);
+    cornerPoints.push_back(topRight);
+    cornerPoints.push_back(bottomLeft);
+    cornerPoints.push_back(bottomRight);
+    
+    return cornerPoints;
+}
+

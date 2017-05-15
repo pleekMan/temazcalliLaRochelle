@@ -30,6 +30,8 @@ public:
     void beginDraw();
     void endDraw();
     
+    vector<ofPoint> getCorners();
+    
     ofxBezierWarp warpSurface;
     int ID;
     string name;

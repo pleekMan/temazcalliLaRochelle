@@ -16,7 +16,7 @@ SurfaceManager::~SurfaceManager(){
 }
 
 void SurfaceManager::init(){
-    
+    selectedSurface = -1;
 }
 
 void SurfaceManager::update(){
@@ -29,6 +29,7 @@ void SurfaceManager::render(){
         surfaces[i].render();
     }
     
+    previewSelection();
 }
 
 void SurfaceManager::drawBeginOnSurface(int ID){
@@ -56,8 +57,9 @@ bool SurfaceManager::loadSettings(ofxXmlSettings* settings){
             for (int i=0; i<surfacesCount; i++) {
                 
                 string surfaceName = settings->getAttribute("surface", "name","SurfaceX", i);
-                int resX = settings->getAttribute("surface","gridResX",1,i);
-                int resY = settings->getAttribute("surface","gridResY",1,i);
+                int resX = settings->getAttribute("surface","gridResX",2,i);
+                int resY = settings->getAttribute("surface","gridResY",2,i);
+                int id = settings->getAttribute("surface", "id", 0, i);
                 
                 cout << "|| " << surfaceName << endl;
                 
@@ -80,7 +82,7 @@ bool SurfaceManager::loadSettings(ofxXmlSettings* settings){
                 }
                 
                 // CREATE SURFACE
-                createSurface(surfaceName, 640, 480, resX, resY, controlPoints);
+                createSurface(surfaceName, id, 640, 480, resX, resY, controlPoints);
                 
                 
                 
@@ -136,14 +138,12 @@ void SurfaceManager::saveSettings(ofxXmlSettings* settings){
     
 }
 
-void SurfaceManager::createSurface(string name, int width, int height, int resX, int resY, vector<GLfloat> controlPoints){
-    
-    int newId = surfaces.size();
+void SurfaceManager::createSurface(string name, int id, int width, int height, int resX, int resY, vector<GLfloat> controlPoints){
     
     Surface newSurface;
     newSurface.init(width, height, resX, resY);
     newSurface.setName(name);
-    newSurface.setId(newId);
+    newSurface.setId(id);
     newSurface.setControlPoints(controlPoints);
     
     surfaces.push_back(newSurface);
@@ -151,8 +151,22 @@ void SurfaceManager::createSurface(string name, int width, int height, int resX,
     
 }
 
-Surface SurfaceManager::getSurfaceById(int ID){
-    return surfaces[ID];
+Surface* SurfaceManager::getSurfaceById(int ID){
+    
+    if(getSurfaceCount() > 0){ // --> PASAR ESTA AL LUGAR DONDE SE ESTE LLAMANDO A ESTA FUNCION
+        for (int i=0; i<getSurfaceCount(); i++) {
+            
+            if (surfaces[i].ID == ID) {
+                return &surfaces[i];
+            } else {
+                cout << "|| DID NOT FIND A SURFACE WITH ID: " << ID << ". RETURNING SURFACE[0]" << endl;
+                return &surfaces[0];
+            }
+        }
+    } else {
+        cout << "|| NO SURFACE EXIST: RETURNING NULL POINTER" << endl;
+        return nullptr;
+    }
 }
 
 Surface SurfaceManager::getSurfaceByName(string _name){
@@ -166,3 +180,96 @@ void SurfaceManager::toggleSurfaceGrid(int ID){
 int SurfaceManager::getSurfaceCount(){
     return surfaces.size();
 }
+
+void SurfaceManager::selectSurface(int x, int y){
+    
+    selectedSurface = -1;
+    
+    for (int i=0; i<getSurfaceCount(); i++) {
+        
+        ofPolyline surfaceShape;
+        // THE ORDER OF vector<GLFloat> IS NOT GOOD FOR CONSTRUCTING THE SQUARED POLYLINE
+        surfaceShape.addVertex(surfaces[i].getCorners()[0]);
+        surfaceShape.addVertex(surfaces[i].getCorners()[1]);
+        surfaceShape.addVertex(surfaces[i].getCorners()[3]);
+        surfaceShape.addVertex(surfaces[i].getCorners()[2]);
+        
+        if(surfaceShape.inside(x, y)){
+            selectedSurface = i;
+            
+            ofBeginShape();
+            ofVertices(surfaceShape.getVertices());
+            ofEndShape();
+            
+            
+            break;
+        }
+    }
+    activateSurface(selectedSurface);
+    
+}
+
+
+void SurfaceManager::activateSurface(int selectedSurface){
+    
+    if (selectedSurface != -1) {
+        for (int i=0; i<getSurfaceCount(); i++) {
+            surfaces[i].warpSurface.setShowWarpGrid(false);
+        }
+        surfaces[selectedSurface].warpSurface.setShowWarpGrid(true);
+        
+    }
+}
+
+void SurfaceManager::previewSelection(){
+    
+    for (int i=0; i<getSurfaceCount(); i++) {
+        
+        ofPolyline surfaceShape;
+        // THE ORDER OF vector<GLFloat> IS NOT GOOD FOR CONSTRUCTING THE SQUARED POLYLINE
+        surfaceShape.addVertex(surfaces[i].getCorners()[0]);
+        surfaceShape.addVertex(surfaces[i].getCorners()[1]);
+        surfaceShape.addVertex(surfaces[i].getCorners()[3]);
+        surfaceShape.addVertex(surfaces[i].getCorners()[2]);
+        
+        if(surfaceShape.inside(ofGetMouseX(), ofGetMouseY())){
+            
+            ofPushStyle();
+            ofNoFill();
+            ofSetColor(0, 255, 255);
+            
+            ofBeginShape();
+            ofVertices(surfaceShape.getVertices());
+            ofEndShape(true);
+            
+            ofDrawLine(surfaceShape.getVertices()[0], surfaceShape.getVertices()[2]);
+            ofDrawLine(surfaceShape.getVertices()[1], surfaceShape.getVertices()[3]);
+
+            
+            ofPopStyle();
+            
+            break;
+        }
+    }
+    
+}
+void SurfaceManager::keyPressed(int key){
+    
+    // TEST TO GET THE CORNERS OF A WARPSURFACE
+    if (key == 'c' || key == 'C') {
+        vector<ofPoint> corners = surfaces[0].getCorners();
+        
+        for (int i=0; i<corners.size(); i++) {
+            cout << "Corner " << i << " -> " << ofToString(corners[i].x) << ":" << ofToString(corners[i].y) << endl;
+        }
+    }
+}
+
+void SurfaceManager::mouseReleased(int x, int y, int button){
+    
+    selectSurface(x,y);
+ 
+}
+
+
+
