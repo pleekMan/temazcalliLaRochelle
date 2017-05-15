@@ -19,6 +19,10 @@ void SurfaceManager::init(){
     selectedSurface = -1;
 }
 
+void SurfaceManager::setFont(ofTrueTypeFont *_font){
+    font = _font;
+}
+
 void SurfaceManager::update(){
     
 }
@@ -27,6 +31,10 @@ void SurfaceManager::render(){
     
     for (int i=0; i<getSurfaceCount(); i++) {
         surfaces[i].render();
+        
+        if (surfaces[i].isActive()) {
+            surfaces[i].drawGizmos();
+        }
     }
     
     previewSelection();
@@ -183,7 +191,7 @@ int SurfaceManager::getSurfaceCount(){
 
 void SurfaceManager::selectSurface(int x, int y){
     
-    selectedSurface = -1;
+    //selectedSurface = -1;
     
     for (int i=0; i<getSurfaceCount(); i++) {
         
@@ -215,8 +223,10 @@ void SurfaceManager::activateSurface(int selectedSurface){
     if (selectedSurface != -1) {
         for (int i=0; i<getSurfaceCount(); i++) {
             surfaces[i].warpSurface.setShowWarpGrid(false);
+            surfaces[i].setActive(false);
         }
         surfaces[selectedSurface].warpSurface.setShowWarpGrid(true);
+        surfaces[selectedSurface].setActive(true);
         
     }
 }
@@ -232,9 +242,14 @@ void SurfaceManager::previewSelection(){
         surfaceShape.addVertex(surfaces[i].getCorners()[3]);
         surfaceShape.addVertex(surfaces[i].getCorners()[2]);
         
-        if(surfaceShape.inside(ofGetMouseX(), ofGetMouseY())){
+        if(surfaceShape.inside(ofGetMouseX(), ofGetMouseY()) && i != selectedSurface){
             
             ofPushStyle();
+            ofRectangle textBoundingBox = font->getStringBoundingBox(surfaces[i].name, 0, 0);
+            font->drawString(surfaces[i].name, ofGetMouseX() - (textBoundingBox.getWidth() * 0.5),ofGetMouseY() - 20);
+            
+            
+            // DRAW BOUNDING SHAPE + CROSS
             ofNoFill();
             ofSetColor(0, 255, 255);
             

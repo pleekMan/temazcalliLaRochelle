@@ -25,31 +25,38 @@ void ofApp::setup(){
     videoSize = 1920;
 
     
-    selectedSurface = 0;
+    //selectedSurface = 0;
     moveStep = 1;
     stopWhenFinished = true;
     
     calibrationMode = true;
     
     
+    font.load("FiraCode-Regular.ttf", 40);
+    
+    
     //-----------
     
-    videoSurface[0].allocate(videoSize, videoSize / 2, 3, 2, 100);
-    videoSurface[1].allocate(videoSize, videoSize / 2, 3, 2, 100);
+    
+    //videoSurface[0].allocate(videoSize, videoSize / 2, 3, 2, 100);
+    //videoSurface[1].allocate(videoSize, videoSize / 2, 3, 2, 100);
     
     
-    cout << ofToString(videoSurface[0].getControlPoints()) << endl;
+    //cout << ofToString(videoSurface[0].getControlPoints()) << endl;
     
     //vector<GLfloat> bezierPoints1;
-    vector<GLfloat> bezierPoints2;
+    //vector<GLfloat> bezierPoints2;
     
     //loadMappingData();
     //loadSettings();
     
+    
     //----- LO NUEVO CON SURFACES
     settings.load("settings.xml");
     surfaceManager.init();
+    surfaceManager.setFont(&font);
     surfaceManager.loadSettings(&settings);
+    
     
     
 }
@@ -194,7 +201,7 @@ void ofApp::keyPressed(int key){
     
     if(key == 'c' || key == 'C'){
         calibrationMode = !calibrationMode;
-        selectedSurface = 0;
+        //selectedSurface = 0;
     }
     
     if(key == ' '){
@@ -215,10 +222,10 @@ void ofApp::keyPressed(int key){
     }
     
     if(key == '1'){
-        selectedSurface = 0;
+        //selectedSurface = 0;
     }
     if(key == '2'){
-        selectedSurface = 1;
+        //selectedSurface = 1;
     }
     
     if (key == 's') {

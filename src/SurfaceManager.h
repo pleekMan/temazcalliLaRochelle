@@ -27,6 +27,7 @@ public:
     void saveSettings(ofxXmlSettings* settings);
     void update();
     void render();
+    void setFont(ofTrueTypeFont *_font);
     
     void createSurface(string name, int id, int width, int height, int resX, int resY, vector<GLfloat> controlPoints);
     Surface* getSurfaceById(int ID);
@@ -45,6 +46,7 @@ public:
     
     
     int selectedSurface;
+    ofTrueTypeFont* font;
     
 private:
     

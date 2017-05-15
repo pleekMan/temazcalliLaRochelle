@@ -26,9 +26,12 @@ public:
     void setControlPoints(vector<GLfloat> controlPoints);
     void setName(string _name);
     void setId(int _id);
+    void setActive(bool state);
+    bool isActive();
     
     void beginDraw();
     void endDraw();
+    void drawGizmos();
     
     vector<ofPoint> getCorners();
     
@@ -36,6 +39,8 @@ public:
     int ID;
     string name;
     int gridResX, gridResY;
+    
+    bool active;
     
 private:
 };

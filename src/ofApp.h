@@ -39,23 +39,14 @@ class ofApp : public ofBaseApp{
    
     bool positionMode;
     
-    int selectedSurface;
     //int currentPoint;
     int moveStep;
     
-    //----------
-    
-    ofxBezierWarp videoSurface[2];
-    
-    //----------
-    
-    ofxXmlSettings settings;
-    //bool loadSettings();
-    
     // ------- LO NUEVO CON SURFACES
-    // ACORDARSE DE CREAR UN SurfaceManager PARA GESTIONARLOS Y RENDERIZAR LOS OVERLAYED CONTROLS
+
+    ofxXmlSettings settings;
+    ofTrueTypeFont font;
     
     SurfaceManager surfaceManager;
-    //Surface surface1;
     
 };

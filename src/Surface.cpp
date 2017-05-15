@@ -13,8 +13,9 @@ void Surface::init(int width, int height, int resX, int resY){
     gridResX = resX;
     gridResY = resY;
     
-    warpSurface.allocate(width,height,resX,resY,100); // (w,h,resX,resY,pixelsPerGridDivision)
+    active = false;
     
+    warpSurface.allocate(width,height,resX,resY,100); // (w,h,resX,resY,pixelsPerGridDivision)
     warpSurface.begin();
     ofClear(0);
     warpSurface.end();
@@ -39,6 +40,14 @@ void Surface::setId(int _id){
     ID = _id;
 }
 
+void Surface::setActive(bool state){
+    active = state;
+}
+
+bool Surface::isActive(){
+    return active;
+}
+
 void Surface::beginDraw(){
     warpSurface.begin();
     
@@ -57,6 +66,28 @@ void Surface::beginDraw(){
 
 void Surface::endDraw(){
     warpSurface.end();
+}
+
+void Surface::drawGizmos(){
+    vector<ofPoint> corners;
+    
+    ofPolyline surfaceCorners;
+    // THE ORDER OF vector<GLFloat> IS NOT GOOD FOR CONSTRUCTING THE SQUARED POLYLINE
+    surfaceCorners.addVertex(getCorners()[0]);
+    surfaceCorners.addVertex(getCorners()[1]);
+    surfaceCorners.addVertex(getCorners()[3]);
+    surfaceCorners.addVertex(getCorners()[2]);
+    
+    ofPoint centroid = surfaceCorners.getCentroid2D();
+    
+    ofPushStyle();
+    ofNoFill();
+    ofSetColor(0, 255, 255);
+    
+    ofDrawEllipse(centroid, 20,20);
+    ofDrawEllipse(centroid, 40, 40);
+    
+    ofPopStyle();
 }
 
 vector<ofPoint> Surface::getCorners(){
