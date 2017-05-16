@@ -36,6 +36,8 @@ public:
     void selectSurface(int x, int y);
     void activateSurface(int selectedSurface);
     
+    void dragContentInside();
+    
     void drawBeginOnSurface(int ID);
     void drawEndOnSurface(int ID);
     void toggleSurfaceGrid(int ID);
@@ -43,10 +45,12 @@ public:
     
     void keyPressed(int key);
     void mouseReleased(int x, int y, int button);
+    void mouseDragged(int x, int y, int button);
     
     
     int selectedSurface;
     ofTrueTypeFont* font;
+    bool dragInside;
     
 private:
     

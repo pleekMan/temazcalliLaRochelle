@@ -17,6 +17,7 @@ SurfaceManager::~SurfaceManager(){
 
 void SurfaceManager::init(){
     selectedSurface = -1;
+    dragInside = false;
 }
 
 void SurfaceManager::setFont(ofTrueTypeFont *_font){
@@ -191,7 +192,7 @@ int SurfaceManager::getSurfaceCount(){
 
 void SurfaceManager::selectSurface(int x, int y){
     
-    //selectedSurface = -1;
+    int tempSelectedSurface = -1;
     
     for (int i=0; i<getSurfaceCount(); i++) {
         
@@ -203,7 +204,10 @@ void SurfaceManager::selectSurface(int x, int y){
         surfaceShape.addVertex(surfaces[i].getCorners()[2]);
         
         if(surfaceShape.inside(x, y)){
-            selectedSurface = i;
+            
+            if (i != tempSelectedSurface) {
+                tempSelectedSurface = i;
+            }
             
             ofBeginShape();
             ofVertices(surfaceShape.getVertices());
@@ -213,6 +217,8 @@ void SurfaceManager::selectSurface(int x, int y){
             break;
         }
     }
+    
+    selectedSurface = tempSelectedSurface;
     activateSurface(selectedSurface);
     
 }
@@ -220,11 +226,13 @@ void SurfaceManager::selectSurface(int x, int y){
 
 void SurfaceManager::activateSurface(int selectedSurface){
     
+    for (int i=0; i<getSurfaceCount(); i++) {
+        surfaces[i].warpSurface.setShowWarpGrid(false);
+        surfaces[i].setActive(false);
+    }
+    
     if (selectedSurface != -1) {
-        for (int i=0; i<getSurfaceCount(); i++) {
-            surfaces[i].warpSurface.setShowWarpGrid(false);
-            surfaces[i].setActive(false);
-        }
+        
         surfaces[selectedSurface].warpSurface.setShowWarpGrid(true);
         surfaces[selectedSurface].setActive(true);
         
@@ -268,6 +276,13 @@ void SurfaceManager::previewSelection(){
     }
     
 }
+
+void SurfaceManager::dragContentInside(){
+    
+    
+}
+
+
 void SurfaceManager::keyPressed(int key){
     
     // TEST TO GET THE CORNERS OF A WARPSURFACE
@@ -284,6 +299,12 @@ void SurfaceManager::mouseReleased(int x, int y, int button){
     
     selectSurface(x,y);
  
+}
+
+void SurfaceManager::mouseDragged(int x, int y, int button){
+    if (dragInside) {
+        dragContentInside();
+    }
 }
 
 

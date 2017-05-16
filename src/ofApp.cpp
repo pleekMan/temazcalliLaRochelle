@@ -83,6 +83,12 @@ void ofApp::update(){
     surfaceManager.drawBeginOnSurface(0);
     ofSetColor(0,255,0);
     ofDrawEllipse(ofGetMouseX(), ofGetMouseY(), 20, 20);
+    for (int i=0; i<20; i++) {
+        float pos = (640 / 20.0) * i;
+        ofDrawLine(pos, 0, 0, pos);
+        ofDrawLine(0, 480 - pos, pos, 480);
+    }
+    
     surfaceManager.drawEndOnSurface(0);
     
     surfaceManager.drawBeginOnSurface(1);

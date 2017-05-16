@@ -14,6 +14,7 @@ void Surface::init(int width, int height, int resX, int resY){
     gridResY = resY;
     
     active = false;
+    contentPosOffset = ofPoint(0,0);
     
     warpSurface.allocate(width,height,resX,resY,100); // (w,h,resX,resY,pixelsPerGridDivision)
     warpSurface.begin();
@@ -29,6 +30,8 @@ void Surface::render(){
     warpSurface.draw();
 }
 
+#pragma mark -
+#pragma mark SETTERS & GETTERS
 void Surface::setControlPoints(vector<GLfloat> controlPoints){
     warpSurface.setControlPoints(controlPoints);
 }
@@ -48,8 +51,34 @@ bool Surface::isActive(){
     return active;
 }
 
+vector<ofPoint> Surface::getCorners(){
+    
+    vector<ofPoint> cornerPoints;
+    
+    ofPoint topLeft = ofPoint(float(warpSurface.getControlPoints()[0]),float(warpSurface.getControlPoints()[1]));
+    
+    ofPoint topRight = ofPoint(float(warpSurface.getControlPoints()[((gridResX-1)*3)+0]),float(warpSurface.getControlPoints()[((gridResX-1)*3)+1]));
+    
+    int blX = (warpSurface.getControlPoints().size() - (gridResX*3))+0;
+    int blY = (warpSurface.getControlPoints().size() - (gridResX*3))+1;
+    ofPoint bottomLeft = ofPoint(float(warpSurface.getControlPoints()[blX]),float(warpSurface.getControlPoints()[blY]));
+    
+    ofPoint bottomRight = ofPoint(float(warpSurface.getControlPoints()[warpSurface.getControlPoints().size() - 3]), float(warpSurface.getControlPoints()[warpSurface.getControlPoints().size() - 2]));
+    
+    cornerPoints.push_back(topLeft);
+    cornerPoints.push_back(topRight);
+    cornerPoints.push_back(bottomLeft);
+    cornerPoints.push_back(bottomRight);
+    
+    return cornerPoints;
+}
+#pragma mark -
+#pragma mark DRAWING
 void Surface::beginDraw(){
     warpSurface.begin();
+    
+    ofPushMatrix();
+    ofTranslate(contentPosOffset);
     
     ofPushStyle();
     
@@ -62,9 +91,12 @@ void Surface::beginDraw(){
     
     ofDrawBitmapString(name, 20, 20);
     
+    
 }
 
 void Surface::endDraw(){
+    
+    ofPopMatrix();
     warpSurface.end();
 }
 
@@ -90,25 +122,9 @@ void Surface::drawGizmos(){
     ofPopStyle();
 }
 
-vector<ofPoint> Surface::getCorners(){
 
-    vector<ofPoint> cornerPoints;
+
+void Surface::offsetContent(ofPoint deltaOffset){
     
-    ofPoint topLeft = ofPoint(float(warpSurface.getControlPoints()[0]),float(warpSurface.getControlPoints()[1]));
-    
-    ofPoint topRight = ofPoint(float(warpSurface.getControlPoints()[((gridResX-1)*3)+0]),float(warpSurface.getControlPoints()[((gridResX-1)*3)+1]));
-    
-    int blX = (warpSurface.getControlPoints().size() - (gridResX*3))+0;
-    int blY = (warpSurface.getControlPoints().size() - (gridResX*3))+1;
-    ofPoint bottomLeft = ofPoint(float(warpSurface.getControlPoints()[blX]),float(warpSurface.getControlPoints()[blY]));
-    
-    ofPoint bottomRight = ofPoint(float(warpSurface.getControlPoints()[warpSurface.getControlPoints().size() - 3]), float(warpSurface.getControlPoints()[warpSurface.getControlPoints().size() - 2]));
-    
-    cornerPoints.push_back(topLeft);
-    cornerPoints.push_back(topRight);
-    cornerPoints.push_back(bottomLeft);
-    cornerPoints.push_back(bottomRight);
-    
-    return cornerPoints;
 }
 

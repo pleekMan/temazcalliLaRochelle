@@ -29,6 +29,9 @@ public:
     void setActive(bool state);
     bool isActive();
     
+#pragma mark CONTINUE THIS METHOD
+    void offsetContent(ofPoint deltaOffset);
+    
     void beginDraw();
     void endDraw();
     void drawGizmos();
@@ -41,6 +44,7 @@ public:
     int gridResX, gridResY;
     
     bool active;
+    ofPoint contentPosOffset;
     
 private:
 };
