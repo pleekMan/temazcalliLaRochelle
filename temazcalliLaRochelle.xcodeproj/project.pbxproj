@@ -58,7 +58,7 @@
 		20A5072DCFF624B5AEFFE88A /* ofxBezierWarp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxBezierWarp.cpp; path = ../../../addons/ofxBezierWarp/src/ofxBezierWarp.cpp; sourceTree = SOURCE_ROOT; };
 		2B40EDA85BEB63E46785BC29 /* tinyxml.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = tinyxml.cpp; path = ../../../addons/ofxXmlSettings/libs/tinyxml.cpp; sourceTree = SOURCE_ROOT; };
 		3BAFE2897D2FABE86454A7AD /* ofxCsv.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCsv.h; path = ../../../addons/ofxCsv/src/ofxCsv.h; sourceTree = SOURCE_ROOT; };
-		4A1679211EC7DC0100EC9C50 /* SurfaceManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SurfaceManager.cpp; sourceTree = "<group>"; };
+		4A1679211EC7DC0100EC9C50 /* SurfaceManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SurfaceManager.cpp; path = src/SurfaceManager.cpp; sourceTree = SOURCE_ROOT; };
 		4A1679221EC7DC0100EC9C50 /* SurfaceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SurfaceManager.h; sourceTree = "<group>"; };
 		4A3200061EC688F10031BBB1 /* Surface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Surface.cpp; sourceTree = "<group>"; };
 		4A3200071EC688F10031BBB1 /* Surface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Surface.h; sourceTree = "<group>"; };

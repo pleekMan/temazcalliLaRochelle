@@ -15,6 +15,7 @@ void Surface::init(int width, int height, int resX, int resY){
     
     active = false;
     contentPosOffset = ofPoint(0,0);
+    showWarpOutline = false;
     
     warpSurface.allocate(width,height,resX,resY,100); // (w,h,resX,resY,pixelsPerGridDivision)
     warpSurface.begin();
@@ -72,24 +73,25 @@ vector<ofPoint> Surface::getCorners(){
     
     return cornerPoints;
 }
+
+ofPolyline Surface::getCornersOutline(){
+    // RETURNS A POLYLINE WITH CLOCKWISE-CONSTRUCTED VERTEX
+    ofPolyline cornersOutline;
+    cornersOutline.addVertex(getCorners()[0]);
+    cornersOutline.addVertex(getCorners()[1]);
+    cornersOutline.addVertex(getCorners()[3]);
+    cornersOutline.addVertex(getCorners()[2]);
+    return cornersOutline;
+}
 #pragma mark -
 #pragma mark DRAWING
 void Surface::beginDraw(){
     warpSurface.begin();
     
+
+    
     ofPushMatrix();
     ofTranslate(contentPosOffset);
-    
-    ofPushStyle();
-    
-    ofSetColor(255, 0, 0);
-    ofNoFill();
-    ofSetLineWidth(5);
-    ofDrawRectangle(0, 0, warpSurface.getWidth(), warpSurface.getHeight());
-    
-    ofPopStyle();
-    
-    ofDrawBitmapString(name, 20, 20);
     
     
 }
@@ -97,10 +99,25 @@ void Surface::beginDraw(){
 void Surface::endDraw(){
     
     ofPopMatrix();
+    
+    // EVERYTHING DRAWN OVER THE CONTENT, BUT NOT AFFECTED BY THE DRAG TRANSLATION
+    if (active && showWarpOutline) {
+        
+        ofPushStyle();
+        
+        ofSetColor(255, 0, 0);
+        ofNoFill();
+        ofSetLineWidth(5);
+        ofDrawRectangle(0, 0, warpSurface.getWidth(), warpSurface.getHeight());
+        
+        ofPopStyle();
+    }
     warpSurface.end();
 }
 
 void Surface::drawGizmos(){
+    
+    /*
     vector<ofPoint> corners;
     
     ofPolyline surfaceCorners;
@@ -120,11 +137,24 @@ void Surface::drawGizmos(){
     ofDrawEllipse(centroid, 40, 40);
     
     ofPopStyle();
+     */
+ 
+}
+
+void Surface::drawWarpSurfaceOutline(){
+    
+    //beginDraw();
+    
+    
+
+    
+    //endDraw();
+    
 }
 
 
 
 void Surface::offsetContent(ofPoint deltaOffset){
-    
+    contentPosOffset += deltaOffset;
 }
 

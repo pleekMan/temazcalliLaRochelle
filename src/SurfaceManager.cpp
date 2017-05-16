@@ -16,8 +16,11 @@ SurfaceManager::~SurfaceManager(){
 }
 
 void SurfaceManager::init(){
-    selectedSurface = -1;
-    dragInside = false;
+    activeSurface = -1;
+    dragInsideMode = false;
+    warpMode = false;
+    
+    gizmosColorA = ofColor(0, 255, 255);
 }
 
 void SurfaceManager::setFont(ofTrueTypeFont *_font){
@@ -33,14 +36,17 @@ void SurfaceManager::render(){
     for (int i=0; i<getSurfaceCount(); i++) {
         surfaces[i].render();
         
+        // ALWAYS DRAW GIZMOS AFTER RENDERING SHIT
         if (surfaces[i].isActive()) {
-            surfaces[i].drawGizmos();
+            drawGizmos();
         }
     }
     
     previewSelection();
+    
 }
 
+#pragma mark DRAWING
 void SurfaceManager::drawBeginOnSurface(int ID){
     surfaces[ID].beginDraw();
 }
@@ -50,6 +56,79 @@ void SurfaceManager::drawEndOnSurface(int ID){
 
 }
 
+void SurfaceManager::drawGizmos(){
+    if (warpMode) {
+        
+    } else if(dragInsideMode){
+        surfaces[activeSurface].drawWarpSurfaceOutline();
+    } else {
+        // SELECT-MODE AND GLOBAL SURFACE FUNCTIONS
+        
+        // DRAW CORNERS
+        
+        ofSetColor(gizmosColorA);
+        ofNoFill();
+        
+        ofPolyline cornersShape =  surfaces[activeSurface].getCornersOutline();
+        for (int i=0; i<cornersShape.getVertices().size(); i++) {
+            float x = cornersShape.getVertices()[i].x;
+            float y = cornersShape.getVertices()[i].y;
+            
+            ofDrawEllipse(x, y, 10, 10);
+            ofDrawEllipse(x, y, 20, 20);
+        }
+        
+        // DRAW WARP MESH AS LITTLE DOTS
+        ofFill();
+        vector<float> warpPoints = surfaces[activeSurface].warpSurface.getControlPointsReference();
+        for (int i=0; i<warpPoints.size(); i++) {
+            float x = warpPoints[(3*i) + 0];
+            float y = warpPoints[(3*i) + 1];
+            
+            ofDrawEllipse(x, y, 3, 3);
+        }
+    }
+}
+
+void SurfaceManager::previewSelection(){
+    
+    for (int i=0; i<getSurfaceCount(); i++) {
+        
+        ofPolyline surfaceShape;
+        // THE ORDER OF vector<GLFloat> IS NOT GOOD FOR CONSTRUCTING THE SQUARED POLYLINE
+        surfaceShape.addVertex(surfaces[i].getCorners()[0]);
+        surfaceShape.addVertex(surfaces[i].getCorners()[1]);
+        surfaceShape.addVertex(surfaces[i].getCorners()[3]);
+        surfaceShape.addVertex(surfaces[i].getCorners()[2]);
+        
+        if(surfaceShape.inside(ofGetMouseX(), ofGetMouseY()) && i != activeSurface){
+            
+            ofPushStyle();
+            ofRectangle textBoundingBox = font->getStringBoundingBox(surfaces[i].name, 0, 0);
+            font->drawString(surfaces[i].name, ofGetMouseX() - (textBoundingBox.getWidth() * 0.5),ofGetMouseY() - 20);
+            
+            
+            // DRAW BOUNDING SHAPE + CROSS
+            ofNoFill();
+            ofSetColor(gizmosColorA);
+            
+            ofBeginShape();
+            ofVertices(surfaceShape.getVertices());
+            ofEndShape(true);
+            
+            ofDrawLine(surfaceShape.getVertices()[0], surfaceShape.getVertices()[2]);
+            ofDrawLine(surfaceShape.getVertices()[1], surfaceShape.getVertices()[3]);
+            
+            
+            ofPopStyle();
+            
+            break;
+        }
+    }
+    
+}
+
+#pragma mark SETTINGS LOAD/SAVE
 bool SurfaceManager::loadSettings(ofxXmlSettings* settings){
     
     //if( settings.loadFile("settingsAttributes_bkup.xml") ){
@@ -147,6 +226,7 @@ void SurfaceManager::saveSettings(ofxXmlSettings* settings){
     
 }
 
+#pragma mark SURFACE OPERATIONS
 void SurfaceManager::createSurface(string name, int id, int width, int height, int resX, int resY, vector<GLfloat> controlPoints){
     
     Surface newSurface;
@@ -193,116 +273,83 @@ int SurfaceManager::getSurfaceCount(){
 void SurfaceManager::selectSurface(int x, int y){
     
     int tempSelectedSurface = -1;
+
     
     for (int i=0; i<getSurfaceCount(); i++) {
         
-        ofPolyline surfaceShape;
-        // THE ORDER OF vector<GLFloat> IS NOT GOOD FOR CONSTRUCTING THE SQUARED POLYLINE
-        surfaceShape.addVertex(surfaces[i].getCorners()[0]);
-        surfaceShape.addVertex(surfaces[i].getCorners()[1]);
-        surfaceShape.addVertex(surfaces[i].getCorners()[3]);
-        surfaceShape.addVertex(surfaces[i].getCorners()[2]);
+        ofPolyline surfaceShape = surfaces[i].getCornersOutline();
         
         if(surfaceShape.inside(x, y)){
             
             if (i != tempSelectedSurface) {
                 tempSelectedSurface = i;
             }
-            
-            ofBeginShape();
-            ofVertices(surfaceShape.getVertices());
-            ofEndShape();
-            
-            
             break;
         }
     }
     
-    selectedSurface = tempSelectedSurface;
-    activateSurface(selectedSurface);
+    // NEED TO DO SOMETHING HERE TO GET OUT OF DRAG-MODE WITHOUT DESELECTING THE ACTUAL SURFACE
+    
+    activeSurface = tempSelectedSurface;
+    activateSurface(activeSurface);
     
 }
 
 
-void SurfaceManager::activateSurface(int selectedSurface){
+void SurfaceManager::activateSurface(int selSurf){
     
     for (int i=0; i<getSurfaceCount(); i++) {
         surfaces[i].warpSurface.setShowWarpGrid(false);
         surfaces[i].setActive(false);
     }
     
-    if (selectedSurface != -1) {
-        
-        surfaces[selectedSurface].warpSurface.setShowWarpGrid(true);
-        surfaces[selectedSurface].setActive(true);
+    if (selSurf != -1) {
+        //surfaces[activeSurface].warpSurface.setShowWarpGrid(true);
+        surfaces[activeSurface].setActive(true);
         
     }
 }
 
-void SurfaceManager::previewSelection(){
-    
-    for (int i=0; i<getSurfaceCount(); i++) {
-        
-        ofPolyline surfaceShape;
-        // THE ORDER OF vector<GLFloat> IS NOT GOOD FOR CONSTRUCTING THE SQUARED POLYLINE
-        surfaceShape.addVertex(surfaces[i].getCorners()[0]);
-        surfaceShape.addVertex(surfaces[i].getCorners()[1]);
-        surfaceShape.addVertex(surfaces[i].getCorners()[3]);
-        surfaceShape.addVertex(surfaces[i].getCorners()[2]);
-        
-        if(surfaceShape.inside(ofGetMouseX(), ofGetMouseY()) && i != selectedSurface){
-            
-            ofPushStyle();
-            ofRectangle textBoundingBox = font->getStringBoundingBox(surfaces[i].name, 0, 0);
-            font->drawString(surfaces[i].name, ofGetMouseX() - (textBoundingBox.getWidth() * 0.5),ofGetMouseY() - 20);
-            
-            
-            // DRAW BOUNDING SHAPE + CROSS
-            ofNoFill();
-            ofSetColor(0, 255, 255);
-            
-            ofBeginShape();
-            ofVertices(surfaceShape.getVertices());
-            ofEndShape(true);
-            
-            ofDrawLine(surfaceShape.getVertices()[0], surfaceShape.getVertices()[2]);
-            ofDrawLine(surfaceShape.getVertices()[1], surfaceShape.getVertices()[3]);
-
-            
-            ofPopStyle();
-            
-            break;
-        }
-    }
-    
-}
 
 void SurfaceManager::dragContentInside(){
     
+    float deltaX = ofGetMouseX() - ofGetPreviousMouseX();
+    float deltaY = ofGetMouseY() - ofGetPreviousMouseY();
+    
+    surfaces[activeSurface].offsetContent(ofPoint(deltaX,deltaY));
     
 }
 
-
+#pragma mark -
+#pragma mark EVENTS
 void SurfaceManager::keyPressed(int key){
     
-    // TEST TO GET THE CORNERS OF A WARPSURFACE
-    if (key == 'c' || key == 'C') {
-        vector<ofPoint> corners = surfaces[0].getCorners();
+    if (key == 'd' || key == 'D') {
+        dragInsideMode = !dragInsideMode;
+        surfaces[activeSurface].showWarpOutline = dragInsideMode;
+    }
+    if (key == 'w' || key == 'W') {
+        warpMode = !warpMode;
         
-        for (int i=0; i<corners.size(); i++) {
-            cout << "Corner " << i << " -> " << ofToString(corners[i].x) << ":" << ofToString(corners[i].y) << endl;
+        if (activeSurface != -1) {
+            surfaces[activeSurface].warpSurface.setShowWarpGrid(warpMode);
         }
     }
 }
 
 void SurfaceManager::mouseReleased(int x, int y, int button){
     
-    selectSurface(x,y);
  
 }
 
+void SurfaceManager::mousePressed(int x, int y, int button){
+    if(!warpMode){
+        selectSurface(x,y);
+    }
+}
+
 void SurfaceManager::mouseDragged(int x, int y, int button){
-    if (dragInside) {
+    if (dragInsideMode && !warpMode) {
         dragContentInside();
     }
 }

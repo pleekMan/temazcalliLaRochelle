@@ -29,14 +29,16 @@ public:
     void setActive(bool state);
     bool isActive();
     
-#pragma mark CONTINUE THIS METHOD
     void offsetContent(ofPoint deltaOffset);
     
     void beginDraw();
     void endDraw();
     void drawGizmos();
+    void drawWarpSurfaceOutline();
+
     
     vector<ofPoint> getCorners();
+    ofPolyline getCornersOutline();
     
     ofxBezierWarp warpSurface;
     int ID;
@@ -45,6 +47,7 @@ public:
     
     bool active;
     ofPoint contentPosOffset;
+    bool showWarpOutline;
     
 private:
 };

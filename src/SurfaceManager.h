@@ -42,15 +42,22 @@ public:
     void drawEndOnSurface(int ID);
     void toggleSurfaceGrid(int ID);
     void previewSelection();
+    void drawGizmos();
+
     
     void keyPressed(int key);
     void mouseReleased(int x, int y, int button);
     void mouseDragged(int x, int y, int button);
+    void mousePressed(int x, int y, int button);
+
     
     
-    int selectedSurface;
+    int activeSurface;
     ofTrueTypeFont* font;
-    bool dragInside;
+    ofColor gizmosColorA;
+    
+    bool dragInsideMode;
+    bool warpMode;
     
 private:
     
