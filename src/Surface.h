@@ -34,7 +34,7 @@ public:
     void beginDraw();
     void endDraw();
     void drawGizmos();
-    void drawWarpSurfaceOutline();
+    void setShowWarpOutline(bool state);
 
     
     vector<ofPoint> getCorners();

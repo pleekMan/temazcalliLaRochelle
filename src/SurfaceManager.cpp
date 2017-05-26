@@ -57,16 +57,20 @@ void SurfaceManager::drawEndOnSurface(int ID){
 }
 
 void SurfaceManager::drawGizmos(){
+    
+    ofPushStyle();
+    
     if (warpMode) {
         
     } else if(dragInsideMode){
-        surfaces[activeSurface].drawWarpSurfaceOutline();
+        //surfaces[activeSurface].drawWarpSurfaceOutline();
     } else {
         // SELECT-MODE AND GLOBAL SURFACE FUNCTIONS
         
         // DRAW CORNERS
         
-        ofSetColor(gizmosColorA);
+        //ofSetColor(gizmosColorA);
+        ofSetColor(255,255,0);
         ofNoFill();
         
         ofPolyline cornersShape =  surfaces[activeSurface].getCornersOutline();
@@ -88,6 +92,8 @@ void SurfaceManager::drawGizmos(){
             ofDrawEllipse(x, y, 3, 3);
         }
     }
+    
+    ofPopStyle();
 }
 
 void SurfaceManager::previewSelection(){
@@ -129,6 +135,7 @@ void SurfaceManager::previewSelection(){
 }
 
 #pragma mark SETTINGS LOAD/SAVE
+#pragma mark OPTION TO LOAD/SAVE DIFFERENT SESSIONS OF MAPPING SETTINGS
 bool SurfaceManager::loadSettings(ofxXmlSettings* settings){
     
     //if( settings.loadFile("settingsAttributes_bkup.xml") ){
@@ -326,7 +333,7 @@ void SurfaceManager::keyPressed(int key){
     
     if (key == 'd' || key == 'D') {
         dragInsideMode = !dragInsideMode;
-        surfaces[activeSurface].showWarpOutline = dragInsideMode;
+        surfaces[activeSurface].setShowWarpOutline(dragInsideMode);
     }
     if (key == 'w' || key == 'W') {
         warpMode = !warpMode;

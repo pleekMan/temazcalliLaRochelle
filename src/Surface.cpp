@@ -17,6 +17,7 @@ void Surface::init(int width, int height, int resX, int resY){
     contentPosOffset = ofPoint(0,0);
     showWarpOutline = false;
     
+    
     warpSurface.allocate(width,height,resX,resY,100); // (w,h,resX,resY,pixelsPerGridDivision)
     warpSurface.begin();
     ofClear(0);
@@ -83,15 +84,27 @@ ofPolyline Surface::getCornersOutline(){
     cornersOutline.addVertex(getCorners()[2]);
     return cornersOutline;
 }
+
+void Surface::setShowWarpOutline(bool state){
+    showWarpOutline = state;
+}
+
+
 #pragma mark -
 #pragma mark DRAWING
 void Surface::beginDraw(){
+    
     warpSurface.begin();
+    ofBackground(0);
     
 
+    //ofSetColor(255, 0, 0);
+    //ofDrawRectangle(220, 140, 100, 100);
+    
     
     ofPushMatrix();
     ofTranslate(contentPosOffset);
+    
     
     
 }
@@ -101,17 +114,26 @@ void Surface::endDraw(){
     ofPopMatrix();
     
     // EVERYTHING DRAWN OVER THE CONTENT, BUT NOT AFFECTED BY THE DRAG TRANSLATION
-    if (active && showWarpOutline) {
+    if (active && !warpSurface.getShowWarpGrid()) {
         
         ofPushStyle();
         
         ofSetColor(255, 0, 0);
         ofNoFill();
-        ofSetLineWidth(5);
+        ofSetLineWidth(10);
         ofDrawRectangle(0, 0, warpSurface.getWidth(), warpSurface.getHeight());
+        //ofDrawRectangle(0, 0, 100, 100);
+        //cout << "SHOULD BE DRAWING A WaRPED RED SURFACE" << endl;
         
         ofPopStyle();
     }
+    
+    
+    //ofSetColor(0, 255, 0);
+    //ofDrawRectangle(320, 240, 100, 100);
+
+
+    
     warpSurface.end();
 }
 
@@ -125,11 +147,11 @@ void Surface::drawGizmos(){
     surfaceCorners.addVertex(getCorners()[0]);
     surfaceCorners.addVertex(getCorners()[1]);
     surfaceCorners.addVertex(getCorners()[3]);
-    surfaceCorners.addVertex(getCorners()[2]);
-    
-    ofPoint centroid = surfaceCorners.getCentroid2D();
-    
-    ofPushStyle();
+     surfaceCorners.addVertex(getCorners()[2]);
+     
+     ofPoint centroid = surfaceCorners.getCentroid2D();
+     
+     ofPushStyle();
     ofNoFill();
     ofSetColor(0, 255, 255);
     
@@ -141,16 +163,7 @@ void Surface::drawGizmos(){
  
 }
 
-void Surface::drawWarpSurfaceOutline(){
-    
-    //beginDraw();
-    
-    
 
-    
-    //endDraw();
-    
-}
 
 
 
